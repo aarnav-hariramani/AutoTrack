@@ -1,19 +1,14 @@
-# Python
 .venv/
 __pycache__/
 *.pyc
 
-# Credentials & tokens
 credentials/
 !.gitkeep
 !README_CREDENTIALS.txt
 !PUT_YOUR_client_secret.json.here
 
-# Env
 .env
 
-# State
 data/state.json
 
-# macOS
 .DS_Store

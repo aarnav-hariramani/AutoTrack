@@ -1,11 +1,11 @@
-# Internship Auto Logger — ML Edition
+# Internship Auto Logger
 Reads Gmail for internship **application confirmations**, uses **ML (transformers)** to extract
 **company / role / status / date**, logs to **Google Sheets**, and creates **Calendar** follow-ups.
 
 ## Engines
 - `transformer` (default): zero-shot classification (status), NER (company), sentence-embeddings (role)
 - `spacy`: classic spaCy + EntityRuler
-- `rules`: minimal regex fallback
+- `rules`: minimal regex fallback (considering removing in future)
 
 ## Install
 ```bash

@@ -4,7 +4,7 @@ app:
   dry_run: true
 
 gmail:
-  # Broader query to catch varied confirmations + Workday/Greenhouse senders
+  # this is a way query to catch varied confirmations + Workday/Greenhouse (they have diff format) senders
   query: >
     in:inbox newer_than:180d
     (

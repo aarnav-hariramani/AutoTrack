@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional
 from dotenv import load_dotenv
 
-# Resolve paths relative to project root
 CONFIG_PATH = os.environ.get(
     "IAL_CONFIG",
     os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "config.yaml")
@@ -29,7 +28,7 @@ class Settings:
 def load_settings() -> Settings:
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
-    # Ensure optional blocks exist
+    # we have to ensure optional blocks exist
     cfg.setdefault("nlp_transformer", {})
     cfg.setdefault("nlp_spacy", {})
     return Settings(**cfg)

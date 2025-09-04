@@ -10,7 +10,6 @@ CREDENTIALS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..",
 CLIENT_SECRET_FILE = os.path.join(CREDENTIALS_DIR, "client_secret.json")
 TOKEN_FILE = os.path.join(CREDENTIALS_DIR, "token.json")
 
-# Request ALL scopes once so token.json works everywhere
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/spreadsheets",
@@ -59,7 +58,7 @@ def _get_header(headers: List[Dict[str, str]], name: str) -> str:
     return ""
 
 def _decode_payload(data: str) -> str:
-    # Gmail returns base64url-encoded data
+    # gmail returns base64url-encoded data
     missing_padding = len(data) % 4
     if missing_padding:
         data += "=" * (4 - missing_padding)
@@ -99,7 +98,7 @@ def extract_plain_text(message: Dict[str, Any]) -> Tuple[str, str, str]:
         if "data" in body:
             body_text = _decode_payload(body["data"])
 
-    # Clean
+    # clean
     subject = _clean_text(subject)
     from_email = _clean_text(from_email)
     body_text = _clean_text(body_text)

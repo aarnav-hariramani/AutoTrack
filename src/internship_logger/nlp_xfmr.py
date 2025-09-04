@@ -12,7 +12,6 @@ except Exception:
 from transformers import pipeline
 from sentence_transformers import SentenceTransformer, util
 
-# --- helpers ---
 def _clean(s: str) -> str:
     s = re.sub(r"[\u200B-\u200D\uFEFF]", "", s or "")
     s = re.sub(r"[ \t]+", " ", s)
@@ -21,7 +20,6 @@ def _clean(s: str) -> str:
 def _texts(subject: str, body: str) -> str:
     return _clean(subject) + "\n\n" + _clean(body)
 
-# --- model singletons ---
 _ZS = None
 _NER = None
 _EMB = None
@@ -37,17 +35,14 @@ def _ensure_models(zs_name: str, ner_name: str, emb_name: str):
     return _ZS, _NER, _EMB
 
 def extract_company(subject: str, from_header: str, body: str, ner_pipe) -> str:
-    # Prefer ORG in subject
     sub_ents = ner_pipe(_clean(subject)) or []
     orgs = [e["word"] for e in sub_ents if e.get("entity_group") == "ORG"]
     if orgs:
         return orgs[0]
-    # Then body
     body_ents = ner_pipe(_clean(body[:4000])) or []
     orgs = [e["word"] for e in body_ents if e.get("entity_group") == "ORG"]
     if orgs:
         return orgs[0]
-    # Heuristics
     m = re.search(r"\bat\s+([A-Z][A-Za-z0-9&.\- ]{2,})", subject)
     if m:
         return m.group(1).strip(" -—|:")

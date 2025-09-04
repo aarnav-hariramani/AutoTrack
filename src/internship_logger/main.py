@@ -4,7 +4,7 @@ import pytz
 
 from .settings import load_settings, load_state, save_state
 from .email_client import search_messages, get_message, extract_plain_text
-# Fallbacks
+# fallback import
 from .nlp_rules import classify_status as classify_status_rules, extract_company as extract_company_rules, extract_role as extract_role_rules, extract_date_applied as extract_date_rules
 # spaCy + transformer
 from .nlp_spacy import build_spacy, parse_email as parse_email_spacy
