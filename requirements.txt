@@ -1,0 +1,9 @@
+google-api-python-client>=2.140.0
+google-auth>=2.34.0
+google-auth-oauthlib>=1.2.0
+gspread>=6.0.0
+python-dotenv>=1.0.1
+PyYAML>=6.0.1
+pytz>=2024.1
+dateparser>=1.2.0
+spacy>=3.7.0

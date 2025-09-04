@@ -1,0 +1,36 @@
+app:
+  timezone: "America/New_York"
+  followup_days: 14
+  dry_run: false
+
+gmail:
+  # Tweak terms to match your inbox
+  query: >
+    in:inbox newer_than:120d
+    ("application received" OR "thanks for applying" OR "submitted your application"
+     OR "we received your application" OR "Application Confirmation")
+
+nlp:
+  engine: "spacy"                # "spacy" | "rules"
+  spacy_model: "en_core_web_md"  # run: python -m spacy download en_core_web_md
+  role_synonyms:
+    - "software"
+    - "swe"
+    - "data"
+    - "machine learning"
+    - "ml"
+    - "ai"
+    - "backend"
+    - "frontend"
+    - "full stack"
+    - "security"
+    - "ios"
+    - "android"
+
+sheets:
+  spreadsheet_name: "Internship Tracker"
+  worksheet_name: "Applications"
+
+calendar:
+  enabled: true
+  calendar_id: "primary"

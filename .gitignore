@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Credentials & tokens
+credentials/
+!.gitkeep
+
+# Env
+.env
+
+# Logs & state
+data/state.json
+
+# macOS
+.DS_Store
