@@ -6,11 +6,13 @@ __pycache__/
 # Credentials & tokens
 credentials/
 !.gitkeep
+!README_CREDENTIALS.txt
+!PUT_YOUR_client_secret.json.here
 
 # Env
 .env
 
-# Logs & state
+# State
 data/state.json
 
 # macOS

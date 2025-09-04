@@ -1,5 +1,4 @@
-import os
-import base64
+import os, base64, re
 from typing import List, Dict, Any, Optional, Tuple
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -11,15 +10,19 @@ CREDENTIALS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..",
 CLIENT_SECRET_FILE = os.path.join(CREDENTIALS_DIR, "client_secret.json")
 TOKEN_FILE = os.path.join(CREDENTIALS_DIR, "token.json")
 
-# Scopes for Gmail read-only
-SCOPES_GMAIL = ["https://www.googleapis.com/auth/gmail.readonly"]
+# Request ALL scopes once so token.json works everywhere
+SCOPES = [
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/calendar.events",
+]
 
 def _ensure_creds(scopes: List[str]) -> Credentials:
     os.makedirs(CREDENTIALS_DIR, exist_ok=True)
     creds: Optional[Credentials] = None
     if os.path.exists(TOKEN_FILE):
         creds = Credentials.from_authorized_user_file(TOKEN_FILE, scopes)
-    # If no valid creds, go through browser flow
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -31,7 +34,7 @@ def _ensure_creds(scopes: List[str]) -> Credentials:
     return creds
 
 def get_gmail_service():
-    creds = _ensure_creds(SCOPES_GMAIL)
+    creds = _ensure_creds(SCOPES)
     return build("gmail", "v1", credentials=creds)
 
 def search_messages(query: str, max_results: int = 100) -> List[Dict[str, Any]]:
@@ -62,16 +65,19 @@ def _decode_payload(data: str) -> str:
         data += "=" * (4 - missing_padding)
     return base64.urlsafe_b64decode(data).decode("utf-8", errors="replace")
 
+def _clean_text(s: str) -> str:
+    s = re.sub(r"[\u200B-\u200D\uFEFF]", "", s or "")
+    s = re.sub(r"[ \t]+", " ", s)
+    s = re.sub(r"\s+\n", "\n", s)
+    return s.strip()
+
 def extract_plain_text(message: Dict[str, Any]) -> Tuple[str, str, str]:
-    """
-    Returns: (subject, from_email, text)
-    """
+    """Returns: (subject, from_email, text)"""
     payload = message.get("payload", {})
     headers = payload.get("headers", [])
     subject = _get_header(headers, "Subject")
     from_email = _get_header(headers, "From")
 
-    # Try to locate text/plain first
     body_text = ""
     def traverse(parts):
         nonlocal body_text
@@ -82,9 +88,7 @@ def extract_plain_text(message: Dict[str, Any]) -> Tuple[str, str, str]:
             elif mime == "text/plain" and "data" in p.get("body", {}):
                 body_text += _decode_payload(p["body"]["data"]) + "\n"
             elif mime == "text/html" and "data" in p.get("body", {}):
-                # fallback: strip crude HTML tags
                 html = _decode_payload(p["body"]["data"])
-                import re
                 text = re.sub("<[^<]+?>", " ", html)
                 body_text += text + "\n"
 
@@ -95,4 +99,8 @@ def extract_plain_text(message: Dict[str, Any]) -> Tuple[str, str, str]:
         if "data" in body:
             body_text = _decode_payload(body["data"])
 
-    return subject, from_email, body_text.strip()
+    # Clean
+    subject = _clean_text(subject)
+    from_email = _clean_text(from_email)
+    body_text = _clean_text(body_text)
+    return subject, from_email, body_text

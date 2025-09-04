@@ -4,9 +4,9 @@ import dateparser
 
 STATUS_RULES = [
     ("Rejected", r"(?:we regret|unfortunately|not moving forward|declined)"),
-    ("Interview", r"(?:interview|schedule time|book a time|speak with|phone screen)"),
+    ("Interview", r"(?:interview|schedule time|book a time|phone screen|screening)"),
     ("OA", r"(?:online assessment|coding challenge|hackerrank|codility|assessment)"),
-    ("Applied", r"(?:application received|thank you for applying|we received your application|application confirmation)"),
+    ("Applied", r"(?:application confirmation|application received|thank you for applying|thank you for your application|we(?:\s+have)?\s+received your application|we'?ve received your application|confirm that your application|has been received|thank you for your interest)"),
 ]
 
 ROLE_HINT = r"(software|swe|data|machine\s*learning|ml|ai|computer|backend|frontend)[^.\n]{0,40}\b(intern|internship)\b"
@@ -19,6 +19,9 @@ def classify_status(subject: str, body: str) -> str:
     return "Other"
 
 def extract_company(subject: str, from_header: str, body: str) -> str:
+    m = re.search(r"\bat\s+([A-Za-z0-9&.\- ]{2,})", subject)
+    if m:
+        return m.group(1).strip(" -—|:")
     m = re.search(r"application (?:to|for)\s+([A-Za-z0-9&.\- ]{2,})", subject, flags=re.I)
     if m:
         return m.group(1).strip(" -—|:")

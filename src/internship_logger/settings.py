@@ -1,6 +1,4 @@
-import os
-import json
-import yaml
+import os, json, yaml
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 from dotenv import load_dotenv
@@ -22,6 +20,8 @@ class Settings:
     app: Dict[str, Any]
     gmail: Dict[str, Any]
     nlp: Dict[str, Any]
+    nlp_transformer: Dict[str, Any] | None
+    nlp_spacy: Dict[str, Any] | None
     sheets: Dict[str, Any]
     calendar: Dict[str, Any]
     spreadsheet_id: Optional[str] = os.environ.get("GOOGLE_SHEETS_SPREADSHEET_ID")
@@ -29,6 +29,9 @@ class Settings:
 def load_settings() -> Settings:
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
+    # Ensure optional blocks exist
+    cfg.setdefault("nlp_transformer", {})
+    cfg.setdefault("nlp_spacy", {})
     return Settings(**cfg)
 
 def load_state() -> dict:

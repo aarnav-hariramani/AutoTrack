@@ -1,18 +1,42 @@
 app:
   timezone: "America/New_York"
   followup_days: 14
-  dry_run: false
+  dry_run: true
 
 gmail:
-  # Tweak terms to match your inbox
+  # Broader query to catch varied confirmations + Workday/Greenhouse senders
   query: >
-    in:inbox newer_than:120d
-    ("application received" OR "thanks for applying" OR "submitted your application"
-     OR "we received your application" OR "Application Confirmation")
+    in:inbox newer_than:180d
+    (
+      "application received" OR "application confirmation" OR
+      "thank you for applying" OR "thank you for your application" OR
+      "we received your application" OR "we have received your application" OR "we've received your application" OR
+      "we want to confirm that your application" OR "has been received"
+    )
+    OR from:(myworkday.com greenhouse.io greenhouse-mail.io hire.lever.co jobs.netflix.com)
 
 nlp:
-  engine: "spacy"                # "spacy" | "rules"
-  spacy_model: "en_core_web_md"  # run: python -m spacy download en_core_web_md
+  engine: "transformer"   # options: transformer | spacy | rules
+
+nlp_transformer:
+  zero_shot_model: "facebook/bart-large-mnli"
+  ner_model: "dslim/bert-base-NER"
+  embed_model: "sentence-transformers/all-MiniLM-L6-v2"
+  status_labels: ["Applied","Interview","OA","Rejected","Offer","Other"]
+  role_probe_phrases:
+    - "software engineering intern"
+    - "software intern"
+    - "data science intern"
+    - "machine learning intern"
+    - "ai research intern"
+    - "research intern"
+    - "security intern"
+    - "frontend intern"
+    - "backend intern"
+    - "full stack intern"
+
+nlp_spacy:
+  spacy_model: "en_core_web_md"
   role_synonyms:
     - "software"
     - "swe"
